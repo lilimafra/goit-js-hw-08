@@ -1,52 +1,34 @@
 import { galleryItems } from './gallery-items.js';
 import SimpleLightbox from 'simplelightbox';
-import BasicLightbox from 'basiclightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 // Change code below this line
 
 console.log(galleryItems);
+console.log(SimpleLightbox);
 
-// Construcción de la Galeria
-const galleryHTML = galleryItems
+// Construcción de la Galería
+const galleryContainer = document.querySelector('.gallery');
+
+const builderGallery = galleryItems
   .map(
-    item => `<li class="gallery__item">
+    item =>
+      `<li class="gallery__item">
         <a class="gallery__link" href="${item.original}">
             <img class="gallery__image"
-            src="${item.preview}" 
-            data-source="${item.original}" 
+            src="${item.preview}"  
             alt="${item.description}"/>
         </a>
     </li>`
   )
   .join('');
 
-const galleryContainer = document.querySelector('.gallery');
-galleryContainer.insertAdjacentHTML('afterbegin', galleryHTML);
-
-// Evita que las imágenes se descarguen al hacer clic
+// Insertar la galería en el HTML
+galleryContainer.insertAdjacentHTML('afterbegin', builderGallery);
 galleryContainer.addEventListener('click', event => event.preventDefault());
 
-// Ventana modal
-galleryContainer.addEventListener('click', clickOnImage);
-
-function clickOnImage(event) {
-  if (event.target.nodeName !== 'IMG') {
-    return;
-  }
-
-  const instance = BasicLightbox.create(
-    `<img src="${event.target.dataset.source}" width="400" height="200">`
-  );
-  instance.show();
-
-  // Evento tecla Esc
-  const closeOnEscape = keyEvent => {
-    if (keyEvent.code === 'Escape') {
-      instance.close();
-      galleryContainer.removeEventListener('keydown', closeOnEscape);
-    }
-  };
-
-  galleryContainer.addEventListener('keydown', closeOnEscape);
-}
+// Ventana modal librería SimpleLightbox
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
